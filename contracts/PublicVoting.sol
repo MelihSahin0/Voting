@@ -1,30 +1,34 @@
 pragma solidity ^0.8.27;
 
-import "./Utils.sol";
 import "./VotingCore.sol";
 
 contract PublicVoting is VotingCore {
-    using Utils for uint;
-
+    
     mapping(address => bool) public hasVoted;
+    address[] public voters;
 
     constructor(
-        string memory question, 
-        string[] memory optionNames, 
-        uint durationInMinutes, 
-        address owner,
-        uint voteFee
-    ) VotingCore(owner, question, optionNames, durationInMinutes, voteFee) {}
+    ) VotingCore() {}
+
+    function newVoting() public {
+        require(msg.sender == owner, "Only the owner can create a new voting instance.");
+
+        for (uint256 i = 0; i < voters.length; i++) {
+            hasVoted[voters[i]] = false;
+        }
+        delete voters;
+    }
 
     function vote(uint optionIndex) public payable override {
         require(isVotingActive, "The voting session is not active.");
         require(optionIndex < options.length, "Invalid option.");
-        require(msg.value == voteFee, string(abi.encodePacked("Please pay exactly ", voteFee.uint2str() , " wei.")));
+        require(msg.value == 0.01 ether, "Please pay exactly 0.01 ethers");
         require(block.timestamp < votingEndTime, "The voting session has ended.");
         require(!hasVoted[msg.sender], "You have already voted.");
 
         options[optionIndex].voteCount += 1;
         hasVoted[msg.sender] = true;
+        voters.push(msg.sender);
 
         emit VotedCast(optionIndex);
     }

@@ -5,6 +5,7 @@
     "hardhat": "^2.22.15"
   },
   "dependencies": {
+    "@nomicfoundation/hardhat-ignition": "^0.15.7",
     "dotenv": "^16.4.5"
   }
 }

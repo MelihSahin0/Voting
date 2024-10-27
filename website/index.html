@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Voting DApp</title>
+</head>
+<body>
+    <h1>Voting DApp</h1>
+    <div>
+        <h2>Create Vote</h2>
+        <form id="createForm">
+            <label>
+                Is Anonymous
+                <input type="checkbox" id="isAnonymous" />
+            </label>
+            <input type="text" id="question" placeholder="Enter your question" required />
+            <input type="text" id="option1" placeholder="Option 1" required />
+            <input type="text" id="option2" placeholder="Option 2" required />
+            <input type="text" id="option3" placeholder="Option 3" required />
+            <input type="text" id="option4" placeholder="Option 4" required />
+            <input type="text" id="option5" placeholder="Option 5" required />
+            <input type="number" id="duration" placeholder="Duration in minutes" required />
+            <button type="submit">Create Voting</button>
+        </form>
+        <div id="createVoteResult"></div>
+    </div>
+    <div>
+        <br/>
+        <h3>Voting results will be posted on the console.</h3>
+    </div>
+    <div>
+        <h2>Vote</h2>
+        <form id="VoteForm">
+            <input type="number" id="voteIndex" placeholder="Enter option index" />
+            <button type="submit" id="voteBtn">Vote</button>
+        </form>
+        <div id="votingResult"></div>
+    </div>
+    </br>
+    <div>
+        <form id="WithdrawFundsForm">
+            <button id="withdrawFunds">WithdrawFunds</button>
+        </form>
+        <div id="wResult"></div>
+        <form id="EndActiveVotingForm">
+            <button id="endActiveVoting">EndActiveVoting</button>
+        </form>
+        <div id="eResult"></div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.6.0/ethers.umd.min.js"></script>
+</body>
+<script src="app.js"></script>
+</html>

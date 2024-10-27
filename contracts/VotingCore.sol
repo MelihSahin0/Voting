@@ -9,25 +9,15 @@ abstract contract VotingCore {
 
     address public owner;
     string public question;
-    Option[] public options;
-    uint public voteFee;
+    Option[5] public options;
     uint public votingEndTime;
     bool public isVotingActive;
 
     event VotedCast(uint optionIndex);
     event VotingEnded();
 
-    constructor(address _owner, string memory _question, string[] memory optionNames, uint durationInMinutes, uint _voteFee) {
-        owner = _owner;
-        question = _question;
-        votingEndTime = block.timestamp + (durationInMinutes * 1 minutes);
-        voteFee = _voteFee;
-
-        for (uint i = 0; i < optionNames.length; i++) {
-            options.push(Option({ name: optionNames[i], voteCount: 0 }));
-        }
-
-        isVotingActive = true;
+    constructor() {
+        owner = msg.sender;
     }
 
     function getResults() public view returns (string[] memory, uint[] memory) {
@@ -45,7 +35,10 @@ abstract contract VotingCore {
         require(msg.sender == owner, "Only the owner can withdraw funds.");
         require(!isVotingActive, "Voting must be ended before withdrawing.");
 
-        payable(owner).transfer(address(this).balance);
+        uint balance = address(this).balance;
+        if (balance > 0){
+            payable(msg.sender).transfer(balance);
+        }   
     }
 
     function endVoting() public {
@@ -54,6 +47,20 @@ abstract contract VotingCore {
 
         isVotingActive = false;
         emit VotingEnded();
+    }
+
+    function newVote(string memory _question, string[] memory optionNames, uint durationInMinutes) public {
+        require(msg.sender == owner, "Only the owner can start voting session.");
+        require(!isVotingActive, "The Session is still active");
+
+        question = _question;
+        votingEndTime = block.timestamp + (durationInMinutes * 1 minutes);
+
+        for (uint i = 0; i < optionNames.length; i++) {
+            options[i] = Option({ name: optionNames[i], voteCount: 0 });
+        }
+
+        isVotingActive = true;
     }
 
     function vote(uint optionIndex) public payable virtual;

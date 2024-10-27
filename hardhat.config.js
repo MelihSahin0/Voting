@@ -10,7 +10,7 @@ module.exports = {
   networks: {
     ganache: {
       url: "http://127.0.0.1:7545",
-      accounts: ["0xC700d23B2e4F9663D971c47c3E513EC8884060b4"] // Replace with private keys from Ganache
+      accounts: ["0x5c109aad06748b6e6aa0611259de1aec9597cfb2c51024ba1fcce7a40cf3e287"] // Replace with private keys from Ganache
     },
     sepolia: {
         url: `https://sepolia.infura.io/v3/${INFURA_API_KEY}`,
