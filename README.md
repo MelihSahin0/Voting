@@ -1,4 +1,4 @@
-This is a simple Voting Project made with soditium and has a simple UI in the website folder.
+This is a simple Voting Project made with solidity and has a simple UI in the website folder.
 This application was tested on Ganache. 
 
 About this Project. The owner can create two Types of Voting. The first one is a public voting, where you can see, 
