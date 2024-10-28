@@ -11,10 +11,13 @@
     <div>
         <h2>Create Vote</h2>
         <form id="createForm">
-            <label>
-                Is Anonymous
-                <input type="checkbox" id="isAnonymous" />
-            </label>
+            <div>
+                <label for="myCheckbox" style="display: inline-flex; align-items: center; margin-top: -10px;">
+                    Is Anonymous
+                    <input type="checkbox" id="isAnonymous" style="margin-left: 8px; margin-top: 10px;"/>
+                </label>
+               
+            </div>
             <input type="text" id="question" placeholder="Enter your question" required />
             <input type="text" id="option1" placeholder="Option 1" required />
             <input type="text" id="option2" placeholder="Option 2" required />
@@ -26,6 +29,18 @@
         </form>
         <div id="createVoteResult"></div>
     </div>
+    </br>
+    <div>
+        <form id="EndActiveVotingForm">
+            <button id="endActiveVoting">EndActiveVoting</button>
+        </form>
+        <div id="eResult"></div>
+        </br>
+        <form id="WithdrawFundsForm">
+            <button id="withdrawFunds">WithdrawFunds</button>
+        </form>
+        <div id="wResult"></div>
+    </div>
     <div>
         <br/>
         <div id="VotingType">VotingType: </div>
@@ -35,23 +50,13 @@
     <div>
         <h2>Vote</h2>
         <form id="VoteForm">
-            <input type="number" id="voteIndex" placeholder="Enter option index" />
+            <input style="width: 190px" type="number" id="voteIndex" placeholder="Enter option index from 0 to 4" />
             <button type="submit" id="voteBtn">Vote</button>
         </form>
         <div id="votingResult"></div>
     </div>
     </br>
-    <div>
-        <form id="WithdrawFundsForm">
-            <button id="withdrawFunds">WithdrawFunds</button>
-        </form>
-        <div id="wResult"></div>
-        <form id="EndActiveVotingForm">
-            <button id="endActiveVoting">EndActiveVoting</button>
-        </form>
-        <div id="eResult"></div>
-    </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.6.0/ethers.umd.min.js"></script>
+    <script src="app.js"></script>
 </body>
-<script src="app.js"></script>
 </html>

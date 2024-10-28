@@ -45,7 +45,7 @@ contract VotingManager{
         isAnonymousVoting = isAnonymous;
 
         if (!isAnonymous){
-            VotingCore(publicVoting).newVote(question, optionNames, durationInMinutes); 
+            PublicVoting(publicVoting).newVote(question, optionNames, durationInMinutes); 
             PublicVoting(publicVoting).newVoting();
             activeVoting = publicVoting;
 
@@ -53,7 +53,7 @@ contract VotingManager{
             emit VotingCreated(publicVoting, false);
         }
         else {
-            VotingCore(anonymousVoting).newVote(question, optionNames, durationInMinutes); 
+            AnonymousVoting(anonymousVoting).newVote(question, optionNames, durationInMinutes); 
             AnonymousVoting(anonymousVoting).newVoting();
             activeVoting = anonymousVoting;
 

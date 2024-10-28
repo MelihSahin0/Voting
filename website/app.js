@@ -1,5 +1,5 @@
 const provider = new ethers.providers.JsonRpcProvider("http://127.0.0.1:7545"); // Ganache RPC URL
-const votingManagerAddress = "0xF34Dc779E7441c82a46518bFCc92236b4AaF4C55"; // Replace with your contract address of the VotingManager
+const votingManagerAddress = "0x2cF8B11B3b89B7152a13142d646a54EE337039b9"; // Replace with your contract address of the VotingManager
 
 let isCurrentlyAnonymous;
 let contractVotingManager;
@@ -59,8 +59,15 @@ window.onload = async (event) => {
 
     async function updateEverything(contract) {
         try {
-            const voteTypeText = await contract.getVotingType();
-            document.getElementById("VotingType").innerHTML = "VotingType: Vote is " + voteTypeText;
+            const isActive = await contract.isVotingActive();
+            console.log(isActive);
+            if (isActive){
+                const voteTypeText = await contract.getVotingType();
+                document.getElementById("VotingType").innerHTML = "VotingType: Vote is " + voteTypeText;
+            } 
+            else {
+                resetVoteDisplay();
+            }        
         }
         catch (error)
         {
@@ -93,9 +100,7 @@ window.onload = async (event) => {
     }
 
     function resetVoteDisplay() {
-        document.getElementById("VotingType").innerHTML = "VotingType: There is no active Vote.";
-        document.getElementById("VoteQuestion").innerHTML = "VoteQuestion: There is no Question";
-        document.getElementById("VoteResult").innerHTML = "VoteResult: There is no Result Vote";
+        document.getElementById("VotingType").innerHTML = "VotingType: The Vote is closed.";
     }
 };
 
