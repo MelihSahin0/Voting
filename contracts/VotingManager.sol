@@ -9,6 +9,7 @@ contract VotingManager{
     address public anonymousVoting;
     address public activeVoting;
     bool private fundsWithdrawn;
+    bool private isAnonymousVoting;
 
     event VotingCreated(address votingContractAddress, bool isAnonymous);
 
@@ -41,7 +42,8 @@ contract VotingManager{
         require(msg.sender == owner, "Only the owner can create a new voting instance.");
         require(activeVoting == address(0), "A voting session is currently active.");
         require(fundsWithdrawn, "Funds from the last voting session must be withdrawn.");
-    
+        isAnonymousVoting = isAnonymous;
+
         if (!isAnonymous){
             VotingCore(publicVoting).newVote(question, optionNames, durationInMinutes); 
             PublicVoting(publicVoting).newVoting();
@@ -56,7 +58,7 @@ contract VotingManager{
             activeVoting = anonymousVoting;
 
             fundsWithdrawn = false;
-            emit VotingCreated(anonymousVoting, false);
+            emit VotingCreated(anonymousVoting, true);
         }
     }
 
@@ -64,18 +66,30 @@ contract VotingManager{
         require(msg.sender == owner, "Only the owner can end the voting session.");
         require(activeVoting != address(0), "No active voting session");
 
-        VotingCore(activeVoting).endVoting(); 
+        if (isAnonymousVoting){
+            AnonymousVoting(activeVoting).endVoting(); 
+        }
+        else {
+            PublicVoting(activeVoting).endVoting();
+        }
+        
         activeVoting = address(0);
     }
 
     function withdrawFunds() public {
-        /* For some reason this never works and i couldn't found out why.
-
         require(msg.sender == owner, "Only the owner can withdraw funds.");
         require(activeVoting == address(0), "Close the active voting session.");
+        require(fundsWithdrawn == false, "Funds already withdrawn.");
 
-        VotingCore(activeVoting).withdraw();
+        /* For some reason this does not work
+        if (isAnonymousVoting){
+            AnonymousVoting(activeVoting).withdraw();   
+        }
+        else {
+            PublicVoting(activeVoting).withdraw();
+        }
         */
+
         fundsWithdrawn = true;
     }
 }

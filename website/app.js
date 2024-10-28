@@ -1,12 +1,11 @@
 const provider = new ethers.providers.JsonRpcProvider("http://127.0.0.1:7545"); // Ganache RPC URL
-const votingManagerAddress = "0x423784178f4060c8eB071e8b2166b38D29433e0A"; // Replace with your contract address of the VotingManager
+const votingManagerAddress = "0xF34Dc779E7441c82a46518bFCc92236b4AaF4C55"; // Replace with your contract address of the VotingManager
 
 let isCurrentlyAnonymous;
 let contractVotingManager;
 let contractPublicVoting;
 let contractAnonymousVoting;
 
-// I wanted to display the Voting Result and Question in the ui, but javascript wasnt able to get the dom element. They were always null.
 window.onload = async (event) => {
     await init();
     
@@ -23,6 +22,7 @@ window.onload = async (event) => {
     }
 
     async function init() {
+
         const abiVotingManager = await fetchABI('./contracts/VotingManager.sol/VotingManager.json');
         contractVotingManager = new ethers.Contract(votingManagerAddress, abiVotingManager, provider.getSigner());
 
@@ -36,7 +36,7 @@ window.onload = async (event) => {
         contractPublicVoting = new ethers.Contract(address, abiPublicVoting, provider.getSigner());
         isCurrentlyAnonymous = false;
 
-        setupVotingEvents(contractPublicVoting, "public");
+        setupVotingEvents(contractPublicVoting);
     }
 
     async function setupAnonymousVoting(address) {
@@ -44,45 +44,58 @@ window.onload = async (event) => {
         contractAnonymousVoting = new ethers.Contract(address, abiAnonymousVoting, provider.getSigner());
         isCurrentlyAnonymous = true;
 
-        setupVotingEvents(contractAnonymousVoting, "anonymous");
+        setupVotingEvents(contractAnonymousVoting);
     }
 
-    function setupVotingEvents(contract, type) {
-        const voteTypeText = type === "public" ? "Vote is public" : "Vote is anonymous";
+    async function setupVotingEvents(contract) {
+        updateEverything(contract);
 
         contract.on("VotedCast", async (optionIndex) => {
-            console.log("VotingType: " + voteTypeText);
-            updateVoteQuestion(contract);
-            updateVoteResults(contract);
+            updateEverything(contract);
         });
 
         contract.on("VotingEnded", () => resetVoteDisplay());
     }
 
+    async function updateEverything(contract) {
+        try {
+            const voteTypeText = await contract.getVotingType();
+            document.getElementById("VotingType").innerHTML = "VotingType: Vote is " + voteTypeText;
+        }
+        catch (error)
+        {
+            console.log(error)
+            document.getElementById("VotingType").innerHTML =  "VotingType: Error fetching votingType";
+        }
+
+        updateVoteQuestion(contract);
+        updateVoteResults(contract);
+    }
+
     async function updateVoteQuestion(contract) {
         try {
             const question = await contract.question();
-            console.log("VoteQuestion: " + question);
+            document.getElementById("VoteQuestion").innerHTML = "VoteQuestion: " + question;
         } catch (error) {
             console.error(error);
-            console.log("VoteQuestion: " + "Error fetching question");
+            document.getElementById("VoteQuestion").innerHTML = "VoteQuestion: Error fetching question";
         }
     }
 
     async function updateVoteResults(contract) {
         try {
             const [options, results] = await contract.getResults();
-            console.log("VoteResult: " + "Options: " + options.join(", ") + " with Results: " + results.join(", "));
+            document.getElementById("VoteResult").innerHTML = "VoteResult: " + "Options: " + options.join(", ") + " with Results: " + results.join(", ");
         } catch (error) {
             console.error(error);
-            console.log("VoteResult: " + "Error fetching results");
+            document.getElementById("VoteResult").innerHTML = "VoteResult: Error fetching results";
         }
     }
 
     function resetVoteDisplay() {
-        console.log("VoteType: " + "There is no Vote")
-        console.log("VoteQuestion: " + "There is no Question")
-        console.log("VoteResult: " + "There is no Result Vote")
+        document.getElementById("VotingType").innerHTML = "VotingType: There is no active Vote.";
+        document.getElementById("VoteQuestion").innerHTML = "VoteQuestion: There is no Question";
+        document.getElementById("VoteResult").innerHTML = "VoteResult: There is no Result Vote";
     }
 };
 
@@ -103,9 +116,11 @@ document.getElementById("createForm").onsubmit = async (event) => {
         const tx = await contractVotingManager.createVoting(isAnonymous, question, options, duration);
         await tx.wait();
         document.getElementById("createVoteResult").innerText = "Vote created successfully!";
+        sleep(2000).then(() => { document.getElementById("createVoteResult").innerText = ""; });
     } catch (error) {
         console.error(error);
         document.getElementById("createVoteResult").innerText = "Error creating vote";
+        sleep(2000).then(() => { document.getElementById("createVoteResult").innerText = ""; });
     }
 };
 
@@ -118,9 +133,11 @@ document.getElementById("VoteForm").onsubmit = async (event) => {
             : await contractPublicVoting.vote(index, { value: ethers.utils.parseEther("0.01") });
         await tx.wait();
         document.getElementById("votingResult").innerText = "Voted successfully!";
+        sleep(2000).then(() => { document.getElementById("votingResult").innerText = ""; });
     } catch (error) {
         console.error(error);
         document.getElementById("votingResult").innerText = "Error casting vote";
+        sleep(2000).then(() => { document.getElementById("votingResult").innerText = ""; });
     }
 };
 
@@ -130,9 +147,11 @@ document.getElementById("WithdrawFundsForm").onsubmit = async (event) => {
         const tx = await contractVotingManager.withdrawFunds();
         await tx.wait();
         document.getElementById("wResult").innerText = "Withdrawn successfully!";
+        sleep(2000).then(() => { document.getElementById("wResult").innerText = ""; });
     } catch (error) {
         console.error(error);
         document.getElementById("wResult").innerText = "Error withdrawing funds";
+        sleep(2000).then(() => { document.getElementById("wResult").innerText = ""; });
     }
 };
 
@@ -142,8 +161,14 @@ document.getElementById("EndActiveVotingForm").onsubmit = async (event) => {
         const tx = await contractVotingManager.endActiveVoting();
         await tx.wait();
         document.getElementById("eResult").innerText = "Voting ended successfully!";
+        sleep(2000).then(() => { document.getElementById("eResult").innerText = ""; });
     } catch (error) {
         console.error(error);
         document.getElementById("eResult").innerText = "Error ending voting";
+        sleep(2000).then(() => { document.getElementById("eResult").innerText = ""; });
     }
 };
+
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
