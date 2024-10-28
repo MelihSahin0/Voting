@@ -17,10 +17,10 @@ So now you are able to create Votings. Please not that you can have only one Vot
 
 There are 4 parameters to create a voting. As seen below:
 * tx = await contractVotingManager.createVoting(isAnonymous, question, options, duration);
-* * isAnonymous: true or false,
-* * questoin: a string
-* * options: a string array of a lenght of 5.
-* * duration: how long the voting is valid in minutes.
+  * isAnonymous: true or false,
+  * questoin: a string
+  * options: a string array of a lenght of 5.
+  * duration: how long the voting is valid in minutes.
 
 After creating the vote you can get the address of the active voting with:
 * tx = await contractVotingManager.activeVoting();
@@ -31,11 +31,11 @@ Now like the VotingManager you need to make an contract (with 'TYPE' i mean if i
 
 After you have the contract you can vote one time in this vote:
 * tx = await contractTYPE.vote(index, { value: ethers.utils.parseEther("0.01") })
-* * index: references which array index you want to vote (0 - 4) are valid
+  * index: references which array index you want to vote (0 - 4) are valid
 
 You can get the result to:
 * await contract.getResults();
-* * you get two arrays. The first one shows what the options are and the second show how often it was voted.
+  * you get two arrays. The first one shows what the options are and the second show how often it was voted.
 
 As i said bevor there can only be one vote at the time. So to make a new vote the owner needs to close it and afterwards withdraw the money. These must be done in that sequence.
 * tx = await contractVotingManager.endActiveVoting();
