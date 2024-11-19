@@ -7,8 +7,7 @@ contract PublicVoting is VotingCore {
     mapping(address => bool) public hasVoted;
     address[] public voters;
 
-    constructor(
-    ) VotingCore() {}
+   constructor(address _creator) VotingCore(_creator) {}
 
     function newVoting() public {
         require(msg.sender == owner, "Only the owner can create a new voting instance.");

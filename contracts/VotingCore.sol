@@ -8,16 +8,20 @@ abstract contract VotingCore {
     }
 
     address public owner;
+    address public creator;
     string public question;
     Option[5] public options;
     uint public votingEndTime;
     bool public isVotingActive;
+    bool public withdrawn;
 
     event VotedCast(uint optionIndex);
     event VotingEnded();
 
-    constructor() {
+    constructor(address _creator) {
         owner = msg.sender;
+        creator = _creator;
+        withdrawn = false;
     }
 
     function getResults() public view returns (string[] memory, uint[] memory) {
@@ -32,18 +36,21 @@ abstract contract VotingCore {
     }
 
     function withdraw() public {
-        require(msg.sender == owner, "Only the owner can withdraw funds.");
-        require(!isVotingActive, "Voting must be ended before withdrawing.");
+        require(msg.sender == creator, "Only the owner can withdraw funds.");
+        require(isVotingActive, "No active voting session.");
+        require(withdrawn == false, "Funds already withdrawn.");
 
         uint balance = address(this).balance;
         if (balance > 0){
             payable(msg.sender).transfer(balance);
         }   
+        withdrawn = true;
     }
 
     function endVoting() public {
         require(msg.sender == owner, "Only the owner can end the voting.");
         require(isVotingActive, "No active voting session.");
+        require(withdrawn == true, "Funds needs to be withdrawn.");
 
         isVotingActive = false;
         emit VotingEnded();

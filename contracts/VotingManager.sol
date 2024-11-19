@@ -8,25 +8,23 @@ contract VotingManager{
     address public publicVoting;
     address public anonymousVoting;
     address public activeVoting;
-    bool private fundsWithdrawn;
     bool private isAnonymousVoting;
 
     event VotingCreated(address votingContractAddress, bool isAnonymous);
 
     constructor(address _publicVoting, address _anonymousVoting) {
         owner = msg.sender;
-        fundsWithdrawn = true;
         activeVoting = address(0);
 
         if (_publicVoting == address(0)) {
-            publicVoting = address(new PublicVoting());
+            publicVoting = address(new PublicVoting(msg.sender));
         } 
         else {
             publicVoting = _publicVoting;
         }
 
         if (_anonymousVoting == address(0)) {
-            anonymousVoting = address(new AnonymousVoting());
+            anonymousVoting = address(new AnonymousVoting(msg.sender));
         } 
         else {
             anonymousVoting = _anonymousVoting;
@@ -41,7 +39,6 @@ contract VotingManager{
     ) public {
         require(msg.sender == owner, "Only the owner can create a new voting instance.");
         require(activeVoting == address(0), "A voting session is currently active.");
-        require(fundsWithdrawn, "Funds from the last voting session must be withdrawn.");
         isAnonymousVoting = isAnonymous;
 
         if (!isAnonymous){
@@ -49,7 +46,6 @@ contract VotingManager{
             PublicVoting(publicVoting).newVoting();
             activeVoting = publicVoting;
 
-            fundsWithdrawn = false;
             emit VotingCreated(publicVoting, false);
         }
         else {
@@ -57,7 +53,6 @@ contract VotingManager{
             AnonymousVoting(anonymousVoting).newVoting();
             activeVoting = anonymousVoting;
 
-            fundsWithdrawn = false;
             emit VotingCreated(anonymousVoting, true);
         }
     }
@@ -74,22 +69,5 @@ contract VotingManager{
         }
         
         activeVoting = address(0);
-    }
-
-    function withdrawFunds() public {
-        require(msg.sender == owner, "Only the owner can withdraw funds.");
-        require(activeVoting == address(0), "Close the active voting session.");
-        require(fundsWithdrawn == false, "Funds already withdrawn.");
-
-        /* For some reason this does not work
-        if (isAnonymousVoting){
-            AnonymousVoting(activeVoting).withdraw();   
-        }
-        else {
-            PublicVoting(activeVoting).withdraw();
-        }
-        */
-
-        fundsWithdrawn = true;
     }
 }

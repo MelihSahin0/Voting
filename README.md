@@ -1,5 +1,5 @@
 This is a simple Voting Project made with solidity and has a simple UI in the website folder.
-This application was tested on Ganache. 
+This application was tested on Ganache and sepolia. 
 
 About this Project. The owner can create two Types of Voting. The first one is a public voting, where you can see, 
 which address voted for wich option. The second type is an anonymous voting. In this voting the addresses are beeing hashed. 
@@ -7,7 +7,9 @@ which address voted for wich option. The second type is an anonymous voting. In 
 HOW TO INTERACT WITH IT VIA TERMINAL:
 
 With this command you deploy the VotingManager:
-* npx hardhat ignition deploy ./ignition/modules/VotingManager.js --network ganache
+* npx hardhat ignition deploy ./ignition/modules/VotingManager.js --network *XXX*
+  * XXX means where you want to deploy. You can say sepolia or ganache
+  * if you are deploying on sepolia dont forget to create a .env file with the variables: "PRIVATE_KEY", "INFURA_API_KEY".
 
 After deploying it on the terminal you will receive the address of the block. With that you should make a contract like this:
 * const abiVotingManager = await fetchABI('./contracts/VotingManager.sol/VotingManager.json');
@@ -37,18 +39,20 @@ You can get the result to:
 * await contract.getResults();
   * you get two arrays. The first one shows what the options are and the second show how often it was voted.
 
-As i said bevor there can only be one vote at the time. So to make a new vote the owner needs to close it and afterwards withdraw the money. These must be done in that sequence.
+As i said bevor there can only be one vote at the time. So to make a new vote the owner needs to withdraw the money and afterwards close the vote. These must be done in that sequence.
+* tx = await contractTYPE.withdraw();
 * tx = await contractVotingManager.endActiveVoting();
-* tx = await contractVotingManager.withdrawFunds();
 
 This should be the core of the application.
 
 HOW TO USE THE WEBSITE:
 
-If you don`t have a VotingManager deployed, you can do it with this:
-* npx hardhat ignition deploy ./ignition/modules/VotingManager.js --network ganache
+If you don`t have a VotingManager deployed, you can do it with this in the terminal:
+* npx hardhat ignition deploy ./ignition/modules/VotingManager.js --network *XXX*
+  * XXX means where you want to deploy. You can say sepolia or ganache
+  * if you are deploying on sepolia dont forget to create a .env file with the variables: "PRIVATE_KEY", "INFURA_API_KEY".
 
-In the app.js file there is the const votingManagerAddress variable. You need to set that with the address of the Votingmanager block manuelly bevor starting the website. If you deployed it yourself the terminal will return the address.
+In the app.js file there are two variables that you need to set. The first variable is 'const UseSepoliaNetwork' and you just need to set it to true if the contract is on the sepolia network. If set to false, it uses the ganache network. The second one is the 'const votingManagerAddress' variable. You need to set that with the address of the Votingmanager block manuelly bevor starting the website. If you deployed it yourself the terminal will return the address.
 
 To start the website you need to go into the website folder:
 * cd website

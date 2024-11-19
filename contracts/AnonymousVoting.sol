@@ -7,8 +7,7 @@ contract AnonymousVoting is VotingCore {
     mapping(bytes32 => bool) private hasVotedHash;
     bytes32[] public voters;
 
-    constructor(
-    ) VotingCore() {}
+   constructor(address _creator) VotingCore(_creator) {}
 
     function newVoting() public {
         require(msg.sender == owner, "Only the owner can create a new voting instance.");
